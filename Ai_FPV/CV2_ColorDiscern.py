@@ -30,7 +30,7 @@ range_rgb = {
 __target_color = ('red', 'green', 'blue')
 lab_data = yaml_handle.get_yaml_data(yaml_handle.lab_file_path)
     
-#设置扩展板的RGB灯颜色使其跟要追踪的颜色一致
+#设置扩展板的RGB灯颜色使其跟要追踪的颜色一致 Read the RGB light color of the camera setting expansion board to make it consistent with the color to be tracked
 def set_rgb(color):
     if color == "red":
         Board.RGB.setPixelColor(0, Board.PixelColor(255, 0, 0))
@@ -49,22 +49,22 @@ def set_rgb(color):
         Board.RGB.setPixelColor(1, Board.PixelColor(0, 0, 0))
         Board.RGB.show()
 
-# 找出面积最大的轮廓
-# 参数为要比较的轮廓的列表
+# 找出面积最大的轮廓 Find the contour with the largest area
+# 参数为要比较的轮廓的列表 parameter is a list of contours to compare
 def getAreaMaxContour(contours):
     
     contour_area_temp = 0
     contour_area_max = 0
     area_max_contour = None
 
-    for c in contours:  # 历遍所有轮廓
-        contour_area_temp = math.fabs(cv2.contourArea(c))  # 计算轮廓面积
+    for c in contours:  # 历遍所有轮廓 iterate over all contours
+        contour_area_temp = math.fabs(cv2.contourArea(c))  # 计算轮廓面积 Calculate the area of the contour
         if contour_area_temp > contour_area_max:
             contour_area_max = contour_area_temp
-            if contour_area_temp > 300:  # 只有在面积大于300时，最大面积的轮廓才是有效的，以过滤干扰
+            if contour_area_temp > 300:  # 只有在面积大于300时，最大面积的轮廓才是有效的，以过滤干扰 Only when the area is greater than 300, the contour of the largest area is valid to filter interference
                 area_max_contour = c
 
-    return area_max_contour, contour_area_max  # 返回最大的轮廓
+    return area_max_contour, contour_area_max  # 返回最大的轮廓 returns the largest contour
 
 detect_color = None
 color_list = []
@@ -79,7 +79,7 @@ def run(img):
     img_copy = img.copy()
     frame_resize = cv2.resize(img_copy, size, interpolation=cv2.INTER_NEAREST)
     frame_gb = cv2.GaussianBlur(frame_resize, (3, 3), 3)
-    frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # 将图像转换到LAB空间
+    frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # 将图像转换到LAB空间 Convert image to LAB space
     color_area_max = None
     max_area = 0
     areaMaxContour_max = 0
@@ -92,18 +92,18 @@ def run(img):
                                               lab_data[i]['min'][2]),
                                              (lab_data[i]['max'][0],
                                               lab_data[i]['max'][1],
-                                              lab_data[i]['max'][2]))  #对原图像和掩模进行位运算
-                opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))  # 开运算
-                closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))  # 闭运算
-                contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]  # 找出轮廓
-                areaMaxContour, area_max = getAreaMaxContour(contours)  # 找出最大轮廓
+                                              lab_data[i]['max'][2]))  #对原图像和掩模进行位运算 Perform bitwise operations on original image and mask
+                opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))  # 开运算 open operation
+                closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))  # 闭运算Close operation
+                contours = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2]  # 找出轮廓find the outline
+                areaMaxContour, area_max = getAreaMaxContour(contours)  # 找出最大轮廓 find the largest contour
                 if areaMaxContour is not None:
-                    if area_max > max_area:  # 找最大面积
+                    if area_max > max_area:  # 找最大面积 find the largest area
                         max_area = area_max
                         color_area_max = i
                         areaMaxContour_max = areaMaxContour
         
-        if max_area > 500:  # 有找到最大面积
+        if max_area > 500:  # 有找到最大面积 have found the largest area
             rect = cv2.minAreaRect(areaMaxContour_max)
             box = np.int0(cv2.boxPoints(rect))
             
@@ -118,8 +118,8 @@ def run(img):
                 else:
                     color = 0
                 color_list.append(color)
-                if len(color_list) == 3:  # 多次判断
-                    # 取平均值
+                if len(color_list) == 3:  # 多次判断 Multiple judgments
+                    # 取平均值 take the average
                     color = int(round(np.mean(np.array(color_list))))
                     color_list = []
                     if color == 1:
@@ -143,7 +143,7 @@ def run(img):
 
 if __name__ == '__main__':
     
-    cap = cv2.VideoCapture(-1) #读取摄像头
+    cap = cv2.VideoCapture(-1) #读取摄像头 read camera
     __target_color = ('red', 'green', 'blue')
     while True:
         ret, img = cap.read()

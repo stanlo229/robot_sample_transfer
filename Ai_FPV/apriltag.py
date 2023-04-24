@@ -13,11 +13,11 @@ Updates: Matt Zucker, Fall 2016
 from __future__ import division
 from __future__ import print_function
 
-import ctypes
-import collections
-import os
-import re
-import numpy
+import ctypes #provides C compatible data types and allows calling functions in DLLs/shared libraries
+import collections #Provides different types of containers (used to store different objects a
+import os #Provides interacction with operating systems
+import re #Regular expression (sequence of characters that forms a search  pattern) 
+import numpy #Adding support for large, multi-dimensional arrays and matrices + high-level mathmathical functions
 
 _HAVE_CV2 = False
 
@@ -32,8 +32,8 @@ if __name__ == '__main__':
 
 # pylint: disable=R0903
 
-class _ImageU8(ctypes.Structure):
-    '''Wraps image_u8 C struct.'''
+class _ImageU8(ctypes.Structure): 
+    '''Wraps image_u8 C struct.''' 
     _fields_ = [
         ('width', ctypes.c_int),
         ('height', ctypes.c_int),
@@ -46,27 +46,27 @@ class _Matd(ctypes.Structure):
     _fields_ = [
         ('nrows', ctypes.c_int),
         ('ncols', ctypes.c_int),
-        ('data', ctypes.c_double*1),
+        ('data', ctypes.c_double*1), #Represents c double datatype (float in python)
     ]
 
 class _ZArray(ctypes.Structure):
     '''Wraps zarray C struct.'''
     _fields_ = [
-        ('el_sz', ctypes.c_size_t),
+        ('el_sz', ctypes.c_size_t),#size_t (int Python type)
         ('size', ctypes.c_int),
         ('alloc', ctypes.c_int),
-        ('data', ctypes.c_void_p)
+        ('data', ctypes.c_void_p)#int or none, optional integer initializer
     ]
 
 class _ApriltagFamily(ctypes.Structure):
     '''Wraps apriltag_family C struct.'''
     _fields_ = [
         ('ncodes', ctypes.c_int32),
-        ('codes', ctypes.POINTER(ctypes.c_int64)),
-        ('black_border', ctypes.c_int32),
+        ('codes', ctypes.POINTER(ctypes.c_int64)), #64 bit signed int datatype, Pointer =private abstract base class + what type will be pointed to
+        ('black_border', ctypes.c_int32), #32 bit signed int datatype
         ('d', ctypes.c_int32),
         ('h', ctypes.c_int32),
-        ('name', ctypes.c_char_p),
+        ('name', ctypes.c_char_p),#accepts an integer address or a bytes object (0-terminated string)
     ]
 
 class _ApriltagDetection(ctypes.Structure):

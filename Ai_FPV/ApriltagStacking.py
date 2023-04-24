@@ -119,25 +119,25 @@ def move():
                 # 机械臂进行夹取
                 AK.setPitchRangeMoving((x, y+1.6, 0), -90,-90, 0, 500)
                 time.sleep(0.5)
-                Board.setBusServoPulse(1, 450, 500)
+                Board.setBusServoPulse(1, 500, 500)
                 time.sleep(0.5)
                 # 夹取后，抬起
-                AK.setPitchRangeMoving((x, y, z), -90,-90, 0, 1500)
+                AK.setPitchRangeMoving((x, y, z+2), -90,-90, 0, 1500)
                 time.sleep(1.5)
                 # 移动到放置位置上方
-                AK.setPitchRangeMoving((-12, 0, 2+3*num), -90,-90, 0, 1500)
+                AK.setPitchRangeMoving((-12, 0, 4*num), -90,-90, 0, 1500)
                 time.sleep(1.5)
                 # 调整放置角度
                 Board.setBusServoPulse(2, 500, 500)
                 time.sleep(0.5)
                 # 放置物块
-                AK.setPitchRangeMoving((-12, 0, 3*num), -90,-90, 0, 1000)
+                AK.setPitchRangeMoving((-12, 0, 4*num), -90,-90, 0, 1000)
                 time.sleep(1)
                 Board.setBusServoPulse(1, 150, 500)
                 time.sleep(0.5)
                 reset()
                 # 抬起机械臂
-                AK.setPitchRangeMoving((-y, x, 2+3*num), -90,-90, 0, 1000)
+                AK.setPitchRangeMoving((-y, x, 5+3*num), -90,-90, 0, 1000)
                 time.sleep(1)
                 # 回到检测的位置
                 AK.setPitchRangeMoving((x, y, z), -90,-90, 0, 1000)

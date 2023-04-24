@@ -11,15 +11,15 @@ from ArmIK.Transform import getAngle
 #from mpl_toolkits.mplot3d import Axes3D
 from HiwonderSDK.Board import setBusServoPulse, getBusServoPulse
 
-#机械臂根据逆运动学算出的角度进行移动
+#机械臂根据逆运动学算出的角度进行移动 The robotic arm moves according to the angle calculated by inverse kinematics
 ik = IK('arm')
-#设置连杆长度
+#设置连杆长度 set the link length
 l1 = ik.l1 + 0.75
 l4 = ik.l4 - 0.15
 ik.setLinkLength(L1=l1, L4=l4)
 
 class ArmIK:
-    servo3Range = (0, 1000.0, 0, 240.0) #脉宽， 角度
+    servo3Range = (0, 1000.0, 0, 240.0) #脉宽， 角度 pulse width, angle
     servo4Range = (0, 1000.0, 0, 240.0)
     servo5Range = (0, 1000.0, 0, 240.0)
     servo6Range = (0, 1000.0, 0, 240.0)
@@ -28,7 +28,7 @@ class ArmIK:
         self.setServoRange()
 
     def setServoRange(self, servo3_Range=servo3Range, servo4_Range=servo4Range, servo5_Range=servo5Range, servo6_Range=servo6Range):
-        # 适配不同的舵机
+        # 适配不同的舵机 Adapt to different servos
         self.servo3Range = servo3_Range
         self.servo4Range = servo4_Range
         self.servo5Range = servo5_Range
@@ -39,7 +39,7 @@ class ArmIK:
         self.servo6Param = (self.servo6Range[1] - self.servo6Range[0]) / (self.servo6Range[3] - self.servo6Range[2])
 
     def transformAngelAdaptArm(self, theta3, theta4, theta5, theta6):
-        #将逆运动学算出的角度转换为舵机对应的脉宽值
+        #将逆运动学算出的角度转换为舵机对应的脉宽值 Convert the angle calculated by inverse kinematics to the corresponding pulse width value of the servo
         servo3 = int(round(theta3 * self.servo3Param + (self.servo3Range[1] + self.servo3Range[0])/2))
         if servo3 > self.servo3Range[1] or servo3 < self.servo3Range[0] + 60:
             logger.info('servo3(%s)超出范围(%s, %s)', servo3, self.servo3Range[0] + 60, self.servo3Range[1])
@@ -66,7 +66,7 @@ class ArmIK:
         return {"servo3": servo3, "servo4": servo4, "servo5": servo5, "servo6": servo6}
 
     def servosMove(self, servos, movetime=None):
-        #驱动3,4,5,6号舵机转动
+        #驱动3,4,5,6号舵机转动 Drive No. 3, 4, 5, 6 servos to rotate
         time.sleep(0.02)
         if movetime is None:
             max_d = 0
@@ -83,12 +83,12 @@ class ArmIK:
         return movetime
 
     def setPitchRange(self, coordinate_data, alpha1, alpha2, da = 1):
-        #给定坐标coordinate_data和俯仰角的范围alpha1，alpha2, 自动在范围内寻找到的合适的解
-        #如果无解返回False,否则返回对应舵机角度,俯仰角
-        #坐标单位cm， 以元组形式传入，例如(0, 5, 10)
-        #da为俯仰角遍历时每次增加的角度
+        #给定坐标coordinate_data和俯仰角的范围alpha1，alpha2, 自动在范围内寻找到的合适的解 Given coordinate_data and pitch angle range alpha1, alpha2, automatically find a suitable solution within the range
+        #如果无解返回False,否则返回对应舵机角度,俯仰角 If there is no solution, return False, otherwise return the corresponding servo angle, pitch angle
+        #坐标单位cm， 以元组形式传入，例如(0, 5, 10) Coordinate unit cm, passed in as a tuple, for example (0, 5, 10)
+        #da为俯仰角遍历时每次增加的角度 da is the angle increased each time the pitch angle traverses
         x, y, z = coordinate_data
-        if alpha1 >= alpha2:
+        if alpha1 >= alpha2: #Correcting da if range values are inputted oppositely
             da = -da
         for alpha in np.arange(alpha1, alpha2, da):#遍历求解
             result = ik.getRotationAngle((x, y, z), alpha)
@@ -101,12 +101,12 @@ class ArmIK:
         return False
 
     def setPitchRangeMoving(self, coordinate_data, alpha, alpha1, alpha2, movetime=None):
-        #给定坐标coordinate_data和俯仰角alpha,以及俯仰角范围的范围alpha1, alpha2，自动寻找最接近给定俯仰角的解，并转到目标位置
-        #如果无解返回False,否则返回舵机角度、俯仰角、运行时间
-        #坐标单位cm， 以元组形式传入，例如(0, 5, 10)
-        #alpha为给定俯仰角
-        #alpha1和alpha2为俯仰角的取值范围
-        #movetime为舵机转动时间，单位ms, 如果不给出时间，则自动计算
+        #给定坐标coordinate_data和俯仰角alpha,以及俯仰角范围的范围alpha1, alpha2，自动寻找最接近给定俯仰角的解，并转到目标位置 Given the coordinate_data and pitch angle alpha, and the range alpha1 and alpha2 of the pitch angle range, automatically find the solution closest to the given pitch angle and go to the target position
+        #如果无解返回False,否则返回舵机角度、俯仰角、运行时间 If there is no solution, return False, otherwise return servo angle, pitch angle, running time
+        #坐标单位cm， 以元组形式传入，例如(0, 5, 10) Coordinate unit cm, passed in as a tuple, for example (0, 5, 10)
+        #alpha为给定俯仰角 alpha is the given pitch angle
+        #alpha1和alpha2为俯仰角的取值范围 alpha1 and alpha2 are the value range of the pitch angle
+        #movetime为舵机转动时间，单位ms, 如果不给出时间，则自动计算 movetime is the turning time of the servo, in ms, if no time is given, it will be calculated automatically
         x, y, z = coordinate_data
         result1 = self.setPitchRange((x, y, z), alpha, alpha1)
         result2 = self.setPitchRange((x, y, z), alpha, alpha2)
@@ -125,7 +125,8 @@ class ArmIK:
         movetime = self.servosMove((servos["servo3"], servos["servo4"], servos["servo5"], servos["servo6"]), movetime)
 
         return servos, alpha, movetime
-    '''
+
+'''
     #for test
     def drawMoveRange2D(self, x_min, x_max, dx, y_min, y_max, dy, z, a_min, a_max, da):
         # 测试可到达点, 以2d图形式展现，z固定
@@ -174,4 +175,11 @@ if __name__ == "__main__":
     #AK.setPitchRangeMoving((0, 10, 10), -30, -90, 0, 2000)
     #time.sleep(2)
     print(AK.setPitchRangeMoving((-4.8, 15, 1.5), 0, -90, 0, 2000))
+    time.sleep(2)
+    print(AK.setPitchRangeMoving((0, 15, 15), 0, -90, 0, 1000))
+    time.sleep(2)
+    print(AK.setPitchRangeMoving((0, 10, 10), -30, -90, 0, 2000))
+    time.sleep(2)
+    print(AK.setPitchRangeMoving((0, 15, 15), 0, -90, 0, 1000))
+    time.sleep(2)
     #AK.drawMoveRange2D(-10, 10, 0.2, 10, 30, 0.2, 2.5, -90, 90, 1)

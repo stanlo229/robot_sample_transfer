@@ -12,16 +12,16 @@ import RPi.GPIO as GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-#apriltag检测
+#apriltag检测 apriltag detection
 
 if sys.version_info.major == 2:
     print('Please run this program with python3!')
     sys.exit(0)
 
 def setBuzzer(sleeptime):
-    GPIO.setup(6, GPIO.OUT) #设置引脚为输出模式
-    GPIO.output(6, 1)       #设置引脚输出高电平
-    time.sleep(sleeptime)   #设置延时
+    GPIO.setup(6, GPIO.OUT) #设置引脚为输出模式 Set the pin to output mode
+    GPIO.output(6, 1)       #设置引脚输出高电平 Set the pin to output high level
+    time.sleep(sleeptime)   #设置延时 Set delay
     GPIO.output(6, 0)
 
 # 检测apriltag
@@ -32,7 +32,7 @@ def apriltagDetect(img):
 
     if len(detections) != 0:
         for detection in detections:                       
-            corners = np.rint(detection.corners)  # 获取四个角点
+            corners = np.rint(detection.corners)  # 获取四个角点 Get the four corner points
             cv2.drawContours(img, [np.array(corners, np.int)], -1, (0, 255, 255), 2)
 
             tag_family = str(detection.tag_family, encoding='utf-8')  # 获取tag_family
@@ -73,7 +73,7 @@ def run(img):
 
 if __name__ == '__main__':
     
-    cap = cv2.VideoCapture(-1) #读取摄像头
+    cap = cv2.VideoCapture(-1) #读取摄像头 read camera
     
     while True:
         ret, img = cap.read()

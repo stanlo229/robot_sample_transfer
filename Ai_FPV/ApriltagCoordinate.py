@@ -37,7 +37,7 @@ def apriltagDetect(img):
 
             object_center_x, object_center_y = int(detection.center[0]), int(detection.center[1])  # 中心点
             
-            object_angle = int(math.degrees(math.atan2(corners[0][1] - corners[1][1], corners[0][0] - corners[1][0])))  # 计算旋转角
+            object_angle = int(math.degrees(math.atan2(corners[0][1] - corners[1][1], corners[0][0] - corners[1][0])))  # 计算旋转角Calculate rotation angle
             
             return tag_family, tag_id
             
@@ -51,7 +51,7 @@ def run(img):
      
     img_h, img_w = img.shape[:2]
     
-    tag_family, tag_id = apriltagDetect(img) # apriltag检测
+    tag_family, tag_id = apriltagDetect(img) # apriltag检测 apriltag detection
     
     if tag_id is not None:
         print('X:',object_center_x,'Y:',object_center_y)
@@ -65,7 +65,7 @@ def run(img):
 
 if __name__ == '__main__':
     
-    cap = cv2.VideoCapture(-1) #读取摄像头
+    cap = cv2.VideoCapture(-1) #读取摄像头 read camera
     
     while True:
         ret, img = cap.read()

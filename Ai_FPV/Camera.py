@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # coding=utf8
 import sys
-import cv2
+from cv2 import cv2
+import numpy
 import time
 
 if sys.version_info.major == 2:
@@ -9,8 +10,8 @@ if sys.version_info.major == 2:
     sys.exit(0)
 
 if __name__ == '__main__':
-    
-    cap = cv2.VideoCapture(-1) #读取摄像头
+    time.sleep(1)
+    cap = cv2.VideoCapture(1) #读取摄像头
     while True:
         ret, img = cap.read()
         if ret:
