@@ -128,7 +128,7 @@ AK = ArmIK()
 
 x_dis = 500
 y_dis = 10
-Z_DIS = 18
+Z_DIS = 7
 z_dis = Z_DIS
 x_pid = PID.PID(P=0.1, I=0.05, D=0.008)  # pid初始化 pid initialization, PID = outer loop controller, controls primary physical parameter (velocity)
 y_pid = PID.PID(P=0.00001, I=0, D=0)
@@ -138,7 +138,7 @@ z_pid = PID.PID(P=0.005, I=0, D=0)
 def initMove():
     Board.setPWMServoPulse(1, 500, 800)
     Board.setPWMServoPulse(2, 500, 800)
-    AK.setPitchRangeMoving((0, y_dis, z_dis), 0,-90, 0, 1500)
+    AK.setPitchRangeMoving((0, y_dis, z_dis), -45,-90, 0, 1500)
     
 st = True
 object_center_x = 0.0
